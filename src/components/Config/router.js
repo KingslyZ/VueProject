@@ -24,6 +24,10 @@ import feedback from "../Home/components/feedback.vue";
 import video from "../Home/components/video.vue";
 //导入联系我们
 import contact from "../Home/components/contact.vue";
+//导入购买商品时的商品详情
+import goodsDec from '../Home/components/goodsDec.vue';
+//导入购买商品时的评论页面
+import goodsComment from '../Home/components/goodsComment.vue';
 
 
 //实例化路由对象
@@ -44,6 +48,8 @@ let router = new VueRouter({
         {path:'/feedback',component:feedback},
         {path:'/video',component:video},
         {path:'/contact',component:contact},
+        {path:'/goodsDec/:id',component:goodsDec,props:true},
+        {path:'/goodsComment/:id',component:goodsComment,props:true}
     ]
 })
 

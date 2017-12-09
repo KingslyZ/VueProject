@@ -1,11 +1,6 @@
 <template>
     <div class="mui-content">
-        <!-- 轮播图 -->
-        <mt-swipe :auto="4000">
-            <mt-swipe-item>1</mt-swipe-item>
-            <mt-swipe-item>2</mt-swipe-item>
-            <mt-swipe-item>3</mt-swipe-item>
-        </mt-swipe>
+        <myswipe :imgUrl='img_url'></myswipe>
         <!-- 详情 -->
         <div class="detail">
             <div class="title">
@@ -40,51 +35,45 @@
         </div>
         <!-- 图文介绍 -->
         <div class="interview">
-            <a class="mui-btn mui-btn-primary mui-btn-outlined">图文介绍</a>
-            <a class="mui-btn mui-btn-danger mui-btn-outlined">商品评论</a>
+            <router-link class="mui-btn mui-btn-primary mui-btn-outlined" v-bind="{to:'/goodsDec/'+info.id}">图文介绍</router-link>
+            <router-link class="mui-btn mui-btn-danger mui-btn-outlined" v-bind="{to:'/goodsComment/'+info.id}">商品评论</router-link>
         </div>
     </div>
 </template>
 <script>
     import Vue from 'vue';
-    //导入轮播
-    import { Swipe, SwipeItem } from 'mint-ui';
-
-    Vue.component(Swipe.name, Swipe);
-    Vue.component(SwipeItem.name, SwipeItem);
+    //导入轮播组件
+    import myswipe from '../../Public/swipe.vue';
     export default{
         props:['id'],
         data(){
             return{
                 info:{},
-                picInfo:[]
+                picInfo:[],
+                img_url:'goods/getthumimages/'+this.id
             }
         },
         created(){
-            this.getInfo()
-            
+            this.getInfo() 
+        },
+        components:{
+            myswipe
         },
         methods:{
-            getInfo:function(){
-                var id = this.id;
-                var url ='http://vue.studyit.io/api/goods/getinfo/'+id;
-                this.$http.get(url).then((res)=>{
-                    console.log(res.body.message);
-                    this.info = res.body.message[0];
-                },(err=>{
-                    console.log('暂无数据');
-                }))
-            },
-            getPic:function(){
-                var id = this.id;
-                var url ='http://vue.studyit.io/api/goods/getthumimages/'+id;
-                this.$http.get(url).then((res)=>{
-                    console.log(res.body.message);
-                    this.picInfo = res.body.message;
-                },(err=>{
-                    console.log('暂无数据');
-                }))
+            //获取详情
+            getInfo(){  
+                var url ='goods/getinfo/'+this.id;
+                this.axios
+                    .get(url)
+                    .then((res)=>{
+                        console.log(res.data.message);
+                        this.info = res.data.message[0];
+                    })
+                    .catch((err)=>{
+                        console.error(err);
+                    })
             }
+            
         }
     }
 </script>
@@ -93,7 +82,7 @@
         padding: 10px;
         background-color: #fff;
     }
-    .mint-swipe{
+    my-swipe{
         height: 250px;
         border:1px solid #ccc;
         border-radius:3px;
@@ -113,6 +102,7 @@
         line-height: 34px;
         border-bottom: 1px solid #ccc;
         color:#0094ff;
+        font-size: 16px;
     }
     .detail  .content{
         padding: 10px 20px;

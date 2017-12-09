@@ -3,7 +3,7 @@
         <ul>
             <li v-for="(item,index) in info" :key="index">
                 <router-link v-bind="{to:'/goodsInfo/'+item.id}">
-                    <img :src="item.img_url" alt="">
+                    <img :src="item.img_url">
                     <p class="title">{{item.title}}</p>
                     <p>
                         <span class="nowPrice">￥{{item.sell_price}}</span>
@@ -29,14 +29,16 @@
         },
         methods:{
             getInfo:function(){
-                var url = "http://vue.studyit.io/api/getgoods";
-                this.$http.get(url).then((res)=>{
-                    console.log(res.body.message);
-                    this.info = res.body.message;
-                },(err)=>{
-                    console.log('暂无数据');
-                })
-
+                var url = "getgoods";
+                this.axios
+                    .get(url)
+                    .then((res)=>{
+                        console.log(res.data.message);
+                        this.info = res.data.message;
+                    })
+                    .catch((err)=>{
+                        console.error(err);
+                    })
             }
         }
     }

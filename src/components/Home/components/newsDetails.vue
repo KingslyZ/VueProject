@@ -65,6 +65,9 @@
     .title span{
         font-size: 14px;
     }
-     
+    .content{
+        padding: 5px;
+        overflow: hidden;
+    }
 </style>
 
