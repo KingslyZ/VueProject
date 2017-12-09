@@ -19,47 +19,20 @@
         </div>
         <hr>
         <!-- 评论专区 -->
-        <div class="comment">
-            <div class="title">
-                <h4>提交评论</h4>
-            </div>
-            <div class="submit">
-                <textarea placeholder="请输入评论内容"></textarea>
-                <button class="mui-btn mui-btn-primary">发表</button>
-            </div>
-            <!-- 评论列表 -->
-            <div class="commentList">
-                <h4>评论列表</h4>
-                <ul>
-                    <li v-for="(item,index) in comments" :key="index">
-                        <div class="content">{{item.content}}</div>
-                        <div class="info">
-                            <span>{{item.user_name}}</span>
-                            <span>{{item.add_time | fmtdate('YYYY-MM-DD HH:mm:ss')}}</span>
-                        </div>
-                    </li>
-                   
-                   
-                </ul>
-            </div>
-            <!-- 加载更多 -->
-             <button class="mui-btn mui-btn-primary mui-btn-outlined" @click="getMore">加载更多</button></button>
-        </div>
+        <my-comment :id="id"></my-comment>
     </div>
     
 </template>
 <script>
-    import Vue from 'vue';
-    //导入放大效果的vue-preview视图
-    import VuePreview from 'vue-preview';
-    //注入到Vue
-    Vue.use(VuePreview);
-
+   
+    //导入评论组件
+    import myComment from '../../Public/comments.vue';
+    
     export default{
         props:['id'],
         data(){
             return{
-                imgInfo:[],
+                imgInfo:{},
                 picInfo:[],
                 comments:[],
                 pageIndex:1
@@ -67,57 +40,47 @@
         },
         created:function(){
             this.getImgInfo(),
-            this.getPic(),
-            this.getComment()
+            this.getPic()
+          
+        },
+        components:{
+            myComment
         },
         methods:{
             //获取文字信息
             getImgInfo:function(){
                 var id = this.id;
-                var url = "http://vue.studyit.io/api/getimageInfo/"+id;
-                this.$http.get(url).then(function(res){
-                    console.log(res.body.message);
-                    this.imgInfo = res.body.message[0];
-                },function(err){
-                    console.log('暂无相关数据');
+                var url = "getimageInfo/"+id;
+                this.axios
+                    .get(url)
+                    .then((res)=>{
+                    console.log(res.data.message);
+                    this.imgInfo = res.data.message[0];
+                })
+                .catch((err)=>{
+                    console.error(err);
                 })
             },
             //获取图片信息
             getPic:function(){
                 var id =this.id;
                 var url = "http://vue.studyit.io/api/getthumimages/"+id;
-                this.$http.get(url).then(function(res){
-                    console.log(res.body.message);
-                    this.picInfo = res.body.message;
+                this.axios
+                    .get(url)
+                    .then((res)=>{
+                    console.log(res.data.message);
+                    this.picInfo = res.data.message;
                     this.picInfo.forEach(function(item){
                         item.h = 400;
                         item.w = 600;
                     })
-                },function(err){
-                    console.log('暂无相关数据');
                 })
-            },
-            //获取评论信息
-            getComment(){
-                var id = this.id;
-                var url = "http://vue.studyit.io/api/getcomments/"+id+"?pageindex="+this.pageIndex;
-                //发送请求
-                this.$http.get(url).then((res)=>{
-                    console.log(res.body);
-                    if(res.body.status ===0){
-                        this.comments = res.body.message
-                    }else{
-                        alert('暂无数据');
-                    }
-                },(err)=>{
-                    console.log(err);
+                .catch((err)=>{
+                    console.error(err);
                 })
-            },
-            //加载更多
-            getMore(){
-                this.pageIndex++;
-                this.getComment();
             }
+           
+            
         }
     }
 </script>

@@ -1,9 +1,12 @@
 <template>
     <div class="mui-content">
         <div class="category">
-            <ul ref="cul">
+            <ul :style="ulWidth">
+                <li>
+                    <a @click.prevent ="getImgList(-1)" href="javascript:;">全部</a>
+                </li>
                 <li v-for="(item,index) in category" :key="index">
-                    <a @click ="getImgList(item.id)">{{item.title}}</a>
+                    <a @click.prevent ="getImgList(item.id)" href="javascript:;">{{item.title}}</a>
                 </li>      
             </ul>
         </div>
@@ -13,7 +16,6 @@
                 <li v-for="(item ,index) in imgList" :key="index">
                     <router-link v-bind='{to:"shareInfo/"+item.id}'>
                         <img :src="item.img_url">
-                         
                         <p>
                             <span>{{item.title}}</span><br>
                             <span>{{item.zhaiyao}}</span>
@@ -31,28 +33,40 @@
         data(){
             return {
                 category:[],
-                imgList:[]
+                imgList:[],
+                ulWidth:'width:0px'
             }
         },
         created:function(){
             this.getCategory(),
-            this.getImgList(0)
+            this.getImgList(-1)
         },
         methods:{
             getCategory:function(){
-                var url ="http://vue.studyit.io/api/getimgcategory";
-                this.$http.get(url).then(function(res){
-                    console.log(res.body.message);
-                    this.category = res.body.message;
+                var url ="getimgcategory";
+                this.axios
+                    .get(url)
+                    .then((res)=>{
+                    console.log(res.data.message);
+                    this.category = res.data.message;
+                    this.ulWidth='width:'+((this.category.length+1)*78)+'px';
+                })
+                .catch((err)=>{
+                    console.error(err);
                 })
             },
             getImgList:function(id){
+                // alert(id)
                 //获取id
-                
-                var url = "http://vue.studyit.io/api/getimages/"+id;
-                this.$http.get(url).then(function(res){
-                    console.log(res.body.message);
-                    this.imgList = res.body.message;
+                var url = "getimages/"+id;
+                this.axios
+                    .get(url)
+                    .then((res)=>{
+                    console.log(res.data.message);
+                    this.imgList = res.data.message;
+                })
+                .catch((err)=>{
+                    console.error(err);
                 })
             }
         }
@@ -63,18 +77,24 @@
         background-color: #fff;
         margin: 0;
         padding: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
     }
     .category ul{
         list-style: none;
-        overflow: hidden;
+        margin-left: 0;
+        padding-left: 0;
+        height:40px;
     }
      .category ul li{
         float: left;
-        padding-left: 4px;
         color:#0094ff;
-        font-size: 12px;
+        font-size: 14px;
+        width:78px;
+        padding: 10px 5px;
+        box-sizing: border-box;
+        text-align: center;
     }
-
 
     .img{
         margin: 0;
@@ -83,19 +103,23 @@
     .img ul{
         list-style: none;
         margin: 0;
-        padding: 0;
+        padding: 0; 
     }
     .img li{
         position: relative;
     }
     .img li img{
         width: 100%;
+        vertical-align: middle;
     }
     .img li p{
+        margin: 0;
+        padding: 0;
         position: absolute;
         bottom:0;
         left:0;
         color:#fff;
+        background-color: rgba(0,0,0,0.5)
     }
 </style>
 

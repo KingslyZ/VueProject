@@ -18,3 +18,8 @@ Vue.prototype.http = axios;
 Vue.prototype.axios = axios;
 
 
+ //导入放大效果的vue-preview视图  在图片分享详情页面使用
+ import VuePreview from 'vue-preview';
+ //注入到Vue
+ Vue.use(VuePreview);
+
