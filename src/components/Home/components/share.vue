@@ -95,7 +95,10 @@
         box-sizing: border-box;
         text-align: center;
     }
-
+    /* 取消下滑的滚动条 */
+    ::-webkit-scrollbar{
+        display: none;
+    }
     .img{
         margin: 0;
         padding: 0;
