@@ -14,7 +14,7 @@
             </ul>
         </div>
        <!-- 商品描述 -->
-       <div class="detail" v-html='details.content'>
+       <div class="content" v-html='details.content'>
        </div>
     </div>
 </template>
@@ -72,9 +72,5 @@
         list-style: none;
         margin: 0;
         padding: 0;
-    }
-    .detail{
-        padding: 5px;
-        overflow: hidden;
     }
 </style>

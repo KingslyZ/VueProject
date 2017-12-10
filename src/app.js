@@ -13,6 +13,8 @@ import './components/Config/filter.js';
 //导入路由模块
 import router from './components/Config/router.js';
 
+//导入设置图片大小的css文件
+import '../static/css/style.css';
 //实例化Vue对象
 let vm = new Vue({
     el:"#app",
