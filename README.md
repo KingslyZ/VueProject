@@ -116,4 +116,55 @@ Vue项目
             document.title = to.meta.title
         })
     ```
+## 商品购买
+    ### 上拉加载更多  
+    使用mint-ui的loadmore组件
+    调用的页面需要做的事：
+	引用标签
+	```html
+    <mt-loadmore ：autoFill='true' :top-method="loadTop" 	:bottom-method="loadBottom" 	:bottom-all-loaded="allLoaded" 	ref="loadmore">
+	</mt-loadmore>
+    ```
+	解析：
+		：top-method是下拉加载更多的方法
+		：bottom-method 是上滑加载更多的方法
+		：bottom-all-loaded  是否全部加载完毕
+		：autoFill 自动填满整个容器
+
+		ref :可以找到使用该标签的DOM 元素
+			Vue实例.$refs.$refs的值  就能获取到对应的值
+
+
+    ```js
+    loadBottom() {
+    ...// 加载更多数据
+    this.allLoaded = true;// 若数据已全部获取完毕
+    this.$refs.loadmore.onBottomLoaded();
+    }
+    ```
+
+    注意：
+	① 要想实现上滑加载更多，就需要去掉index.html页面的<DOCTYPE HTML> 这句话
+	② 想要实现，上拉时获取数据时，显示“加载中”的文字，就要把this.$refs.loadmore.onTopLoaded();
+	写在获取完数据之后
+	而不是写在getInfo（）函数之后，因为这是异步操作，会瞬间解析完该函数名
+	③ 不想难滑动：
+		解决难滑动的问题，因为距离70才能加载
+         而我们的大盒子，和列表的距离差不多，需要实现，大盒子和容器一样大，列表大一些，这样列表滑动到容器底部时，已经是最后一条数据，就可以再过70px就能获取下一页数据
+
+		且要写在数据渲染完毕，来设置容器的高度
+		写在created之内，没有用
+        ```js
+		mounted(){ 			
+            this.$refs.muicontent.style.height = 			document.documentElement.clientHeight +'px';
+        }
+        ```	
+## 商品详情
+    ### 购买数量【子组件给父组件传值】
+    子组件需要做的事：
+	自定义一个事件
+	this.$emit('事件名',想要传给使用该事件的对象的参数)
+	
+    父组件需要做的事：
+	使用该事件，v-on使用事件即可【和普通事件使用方法一致】，但是不需要传值，只需要在事件对于的函数处理时接受子组件传过来的值即可
     

@@ -1,5 +1,6 @@
 <template>
-    <div class="detail">
+    <div ref = 'muicontent' class="detail">
+        <mt-loadmore  :autoFill="false" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
         <ul>
             <li v-for="(item,index) in info" :key="index">
                 <router-link v-bind="{to:'/goodsInfo/'+item.id}">
@@ -14,6 +15,7 @@
                </router-link>
             </li>
         </ul>
+        </mt-loadmore>
     </div>
 </template>
 <script>
@@ -21,31 +23,60 @@
     export default{
         data(){
             return {
-                info:[]
+                info:[],
+                allLoaded:false,
+                pageIndex:1
             }
         },
         created(){
             this.getInfo()
         },
+        mounted(){//此时数据已经渲染完毕
+            //解决难滑动的问题，因为距离70才能加载
+            //而我们的大盒子，和列表的距离差不多，需要实现，
+            //大盒子和容器一样大，列表大一些，这样列表滑动到容器底部时，
+            //已经是最后一条数据，就可以再过70px就能获取下一页数据
+            this.$refs.muicontent.style.height = document.documentElement.clientHeight +'px';
+        },
         methods:{
+            //获取信息
             getInfo:function(){
-                var url = "getgoods";
+                var url = "getgoods?pageindex="+this.pageIndex;
                 this.axios
                     .get(url)
                     .then((res)=>{
-                        console.log(res.data.message);
-                        this.info = res.data.message;
+                        if(res.status ==200 && res.data.status ==0){
+                            if(res.data.message.length == 0){
+                                this.allLoaded = true;
+                            }
+                            // console.log(res.data.message);
+                            this.info = this.info.concat(res.data.message);
+                            //数据是异步获取，如果写在loadBottom()内，不显示“加载中”的文字
+                            this.$refs.loadmore.onBottomLoaded();
+                        }else{
+                            console.log('服务器错误');
+                        }
+                       
                     })
                     .catch((err)=>{
                         console.error(err);
                     })
+            },
+            //上滑加载更多
+            loadBottom(){
+                this.pageIndex ++;
+                this.getInfo();
             }
         }
     }
 </script>
 <style scoped>
+    /* mt-loadmore{
+       
+    } */
     .detail{
         padding-top: 44px;
+        padding-bottom: 100px;
     }
      .detail ul{
          padding: 0;

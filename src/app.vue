@@ -41,7 +41,7 @@
                this.$router.back()
            },
            judgePath(path){
-               let arr = ['/home','/menber','/shopcar','/search'];
+               let arr = ['/home','/member','/shopcar','/search'];
                if(arr.indexOf(path) ==-1){
                    this.isShow = true;
                }else{

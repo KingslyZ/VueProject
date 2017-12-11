@@ -49,12 +49,18 @@ let router = new VueRouter({
         {path:'/video',component:video},
         {path:'/contact',component:contact},
         {path:'/goodsDec/:id',component:goodsDec,props:true},
-        {path:'/goodsComment/:id',component:goodsComment,props:true}
+        {name:'goodsComment',path:'/goodsComment/:id',component:goodsComment,props:true}
     ]
    
 });
 router.afterEach((to, from) => {
-    document.title = to.meta.title
+    console.log(to.meta);
+    if(to.meta.title){
+        document.title = to.meta.title
+    }else{
+        document.title = '首页';
+    }
+    
 })
 
 

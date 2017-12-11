@@ -3,7 +3,7 @@
     <mt-swipe :auto="4000">
         <mt-swipe-item v-for="(item,index) in imgList" :key="index">
             <a :href="item.url">
-                <img  :src="item.img" alt="轮播图">
+                <img  :src="item.src" alt="轮播图">
             </a>
         </mt-swipe-item>
     </mt-swipe>
@@ -29,6 +29,14 @@ export default {
                 console.log(res.data.message);
                 if(res.status == 200 && res.data.status === 0){
                     this.imgList = res.data.message;
+                    this.imgList.forEach((item)=>{
+                        if(item.img){
+                            item.src = item.img;
+                        }else{
+                            item.src = item.src
+                        }
+                        
+                    })
                 }else{
                     console.log('请求服务器失败');
                 }

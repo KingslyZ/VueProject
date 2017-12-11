@@ -3,16 +3,6 @@
        <div class="title">
            {{ details.title }}
        </div>
-       <!-- 轮播图 -->
-        <div class="pic">
-            <ul>
-                <li>
-                    <a href="#">
-                        <img src="" height:100px>
-                    </a>
-                </li>
-            </ul>
-        </div>
        <!-- 商品描述 -->
        <div class="content" v-html='details.content'>
        </div>
@@ -57,20 +47,6 @@
         padding-right: 10px;
         width: 100%;
     }
-    .title{
-        height: 44px;
-        line-height: 44px;
-        border-bottom: 1px solid #ccc;
-    }
-   .pic{
-        height: 250px;
-        border:1px solid #ccc;
-        border-radius:3px;
-        margin-top:5px;
-    }
-    .pic ul{
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
+    
+  
 </style>

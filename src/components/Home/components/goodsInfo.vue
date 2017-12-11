@@ -12,11 +12,13 @@
                     <span class="sellPrice">销售价：￥{{info.sell_price}}</span>
                 </div>
                 <div class="count">
-                    购买数量：
+                    <!-- countChange事件的调用 -->
+                    购买数量：<number :quality='info.stock_quantity' @countChange='getCount'></number>
+                    
                 </div>
                 <div class="buy">
                     <button class="mui-btn mui-btn-primary">立即购买</button>
-                    <button class="mui-btn mui-btn-danger">加入购物车</button>
+                    <button @click='addCar' class="mui-btn mui-btn-danger">加入购物车</button>
                 </div>
             </div>
         </div>
@@ -36,7 +38,7 @@
         <!-- 图文介绍 -->
         <div class="interview">
             <router-link class="mui-btn mui-btn-primary mui-btn-outlined" v-bind="{to:'/goodsDec/'+info.id}">图文介绍</router-link>
-            <router-link class="mui-btn mui-btn-danger mui-btn-outlined" v-bind="{to:'/goodsComment/'+info.id}">商品评论</router-link>
+            <a  @click= 'toComment' class="mui-btn mui-btn-danger mui-btn-outlined" >商品评论</a>
         </div>
     </div>
 </template>
@@ -44,20 +46,24 @@
     import Vue from 'vue';
     //导入轮播组件
     import myswipe from '../../Public/swipe.vue';
+    //导入数据
+    import number from '../../Public/number.vue';
     export default{
         props:['id'],
         data(){
             return{
                 info:{},
                 picInfo:[],
-                img_url:'goods/getthumimages/'+this.id
+                img_url:'getthumimages/'+this.id,
+                count:1
             }
         },
         created(){
             this.getInfo() 
         },
         components:{
-            myswipe
+            myswipe,
+            number
         },
         methods:{
             //获取详情
@@ -72,14 +78,29 @@
                     .catch((err)=>{
                         console.error(err);
                     })
-            }
-            
+            },
+           //编程式导航跳转到评论页面
+           toComment(){
+               this.$router.push({name:'goodsComment',params:{id:this.id}})
+           },
+            //自定义事件countChange对应的处理函数
+            //count是从子组件接收过来数值
+            getCount(count){
+                console.log(count);
+                //子组件给父组件传值
+                this.count = count;
+            },
+            //加入购物车
+            addCar(){
+                console.log(this.count);
+            }    
         }
     }
 </script>
 <style scoped>
     .mui-content{
-        padding: 10px;
+        padding-left: 10px;
+        padding-right:10px;
         background-color: #fff;
     }
     my-swipe{
@@ -98,7 +119,6 @@
         font-size: 14px;
     }
     .detail h4{
-        height: 34px;
         line-height: 34px;
         border-bottom: 1px solid #ccc;
         color:#0094ff;
