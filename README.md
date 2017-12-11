@@ -38,6 +38,14 @@ Vue项目
             display:none;
         }
     ```
+## 图片详情页面
+    使用Vue-Preview 实现图片的放大效果
+    ```js
+        this.picInfo.forEach(function(item){
+            item.h = 400;
+            item.w = 600;
+        })
+    ```
 ## 全局阻拦器
     使用mint-ui中的indicator.open()方法去全局进行拦截
 	写在实例化Vue对象的created(）函数内
@@ -71,3 +79,41 @@ Vue项目
 ## 抽离组件
     -轮播图组件
     -评论组件
+
+## 页面后退
+    -判断是否需要显示后退按钮
+        -使用$route.path来判断路径
+        -使用watch监视$route的变化
+        -使用$router.back()实现后退功能
+        -为了实现刷新之后【地址没有改变，不触发watch】也能出现后退按钮，需要在改变的页面已创建就判断
+    ```js
+        created(){
+          this.judgePath(this.$route.path)
+       },
+        methods:{
+           goBack(){
+               this.$router.back()
+           },
+           judgePath(path){
+               let arr = ['/home','/menber','/shopcar','/search'];
+               if(arr.indexOf(path) ==-1){
+                   this.isShow = true;
+               }else{
+                   this.isShow = false;
+               }
+           }
+        },
+        watch:{
+           '$route':function(newValue){
+               this.judgePath(newValue.path);
+           }
+        }
+    ```
+## 生成title标签
+    使用路由对象的afterEach方法
+    ```js
+        router.afterEach((to, from) => {
+            document.title = to.meta.title
+        })
+    ```
+    

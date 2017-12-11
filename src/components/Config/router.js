@@ -35,22 +35,26 @@ let router = new VueRouter({
     linkExactActiveClass:'mui-active',
     routes:[
         {path:'/',redirect:'/home'},
-        {path:"/home",component:home},
-        {path:"/member",component:member},
-        {path:"/search",component:search},
-        {path:'/shopcar',component:shopcar},
-        {path:"/news",component:news},
-        {path:'/newsDetails/:id',component:newsDetails,props:true},
-        {path:'/share',component:share},
-        {path:"/shareInfo/:id",component:shareInfo,props:true},
-        {path:'/buy',component:buy},
-        {path:'/goodsInfo/:id',component:goodsInfo,props:true},
+        {path:"/home",meta:{title:'首页'},component:home},
+        {path:"/member",meta:{title:'会员中心'},component:member},
+        {path:"/search",meta:{title:'搜索'},component:search},
+        {path:'/shopcar',meta:{title:'购物车'},component:shopcar},
+        {path:"/news",meta:{title:'新闻列表'},component:news},
+        {path:'/newsDetails/:id',meta:{title:'新闻详情'},component:newsDetails,props:true},
+        {path:'/share',meta:{title:'图片分享'},component:share},
+        {path:"/shareInfo/:id",meta:{title:'图片详情'},component:shareInfo,props:true},
+        {path:'/buy',meta:{title:'商品购买'},component:buy},
+        {path:'/goodsInfo/:id',meta:{title:'商品详情'},component:goodsInfo,props:true},
         {path:'/feedback',component:feedback},
         {path:'/video',component:video},
         {path:'/contact',component:contact},
         {path:'/goodsDec/:id',component:goodsDec,props:true},
         {path:'/goodsComment/:id',component:goodsComment,props:true}
     ]
+   
+});
+router.afterEach((to, from) => {
+    document.title = to.meta.title
 })
 
 
