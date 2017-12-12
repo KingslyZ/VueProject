@@ -29,6 +29,8 @@
 </template>
 <script>
     import vueObj from '../src/components/Config/communication.js';
+    //导入本地存储
+    import { getData } from './components/Public/localStorageHelp.js';
     export default {
        data(){
            return {
@@ -41,7 +43,9 @@
           vueObj.$on('bringCount',(count)=>{
                 // console.log(count);
                 this.count += count;
-            })
+            });
+            //获取本地存储的数据
+            this.getNum();
        },
        methods:{
            goBack(){
@@ -54,6 +58,14 @@
                }else{
                    this.isShow = false;
                }
+           },
+           getNum(){
+               let data = getData();
+               let num = 0;
+               data.forEach(function(item) {
+                   num += item.count;
+               });
+                this.count = num;
            }
           
        },

@@ -5,10 +5,12 @@
 </template>
 <script>
     export default {
-        props:['quality'],
+        //num 是购物车上的总数
+        props:['quality','num'],
         data(){
             return{
-                count:1
+                // count:1,
+                count:this.num ? this.num : 1
             }
         },
         methods:{

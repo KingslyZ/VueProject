@@ -14,6 +14,7 @@
                 <div class="count">
                     <!-- countChange事件的调用 -->
                     购买数量：<number :quality='info.stock_quantity' @countChange='getCount'></number>
+                    <!-- 小球对应的动画 -->
                     <transition
                         v-on:before-enter="beforeEnter"
                         v-on:enter="enter"
@@ -57,6 +58,8 @@
     import myswipe from '../../Public/swipe.vue';
     //导入数据
     import number from '../../Public/number.vue';
+    //导入本地存储
+    import { setData } from '../../Public/localStorageHelp.js';
     export default{
         props:['id'],
         data(){
@@ -105,7 +108,8 @@
             addCar(){
                 // console.log(this.count);
                
-                this.isShow = true;  
+                this.isShow = true; 
+                setData({ id:this.id,count:this.count }); 
             },
             //动画执行之前
             beforeEnter(el){
@@ -134,6 +138,7 @@
             //动画执行完毕，显示badge才显示数据
             afterLeave: function () {
                 vueObj.$emit('bringCount',this.count);
+               
             }
         }
     }
