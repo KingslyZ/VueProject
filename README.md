@@ -199,5 +199,235 @@ mounted(){
    this.$emit('事件名',想要传给使用该事件的对象的参数)
 	
    父组件需要做的事：
-   使用该事件，v-on使用事件即可【和普通事件使用方法一致】，但是不需要传值，只需要在事件对于的函数处理时接受子组件传过来的值即可
-    
+   使用该事件，v-on使用事件即可【和普通事件使用方法一致】，但是不需要传值，只需要在事件对于的函数处理时接受子组件传过来的值即可
+### 不相关组件传值
+使用自定义事件进行传值【但是要有同一个事件对象】需要找一个通信模块
+```
+import Vue from 'vue';
+//创建Vue实例
+let vueObj = new Vue();
+//暴露给外部
+export default vueObj;
+
+传值的页面
+	vueObj.$emit('updateBadge', this.count);
+接收值得页面
+	 vueObj.$on('updateBadge',(count)=>{
+      console.log(count)
+   })
+```
+### 点击加入购物车
+#### 小球运动
+注意：
+transition是监视属性的改变 才会触发函数
+使用Vue动画来实现
+```
+<transition
+    v-on:before-enter="beforeEnter"
+	v-on:enter="enter"
+	v-on:after-enter="afterEnter"
+	v-on:after-leave="afterLeave"
+>
+ 	<span v-show='isShow' class="ball">{{ count 	}}</span>
+</transition>
+
+对应方法：
+	 //动画执行之前
+            beforeEnter(el){
+                el.style.transform = 'translate(0,0)';
+            },
+     //动画进入
+            enter(el,done){
+                //记录距离
+                let ballX = el.getBoundingClientRect().left;
+                let ballY = el.getBoundingClientRect().top;
+                //获取bange距离
+                let badgeX = document.querySelector('.mui-badge').getBoundingClientRect().left;
+                let badgeY = document.querySelector('.mui-badge').getBoundingClientRect().top;
+                
+
+                let X = badgeX - ballX;
+                let Y = badgeY - ballY;
+                //设置距离
+                el.style.transform =`translate(${X}px,${Y}px)`
+                done();
+            },
+   //动画进入完毕
+            afterEnter(el){
+                //小球消失
+                this.isShow = false;
+            },
+            //动画执行完毕，显示badge才显示数据
+            afterLeave: function () {
+                vueObj.$emit('bringCount',this.count);
+            }
+        }
+```
+#### badge的值改变
+通知：app.vue数据将发生了改变
+	方法：不相关页面的自定义事件
+	vueObj.$emit('bringCount',this.count);
+
+app.vue页面：
+created()函数内写该方法
+
+	```js
+		vueObj.$on('bringCount',(count)=>{
+		console.log(count);
+		this.count += count;
+		});
+
+	```      
+
+#### 存储在localStorage中
+
+创建单独的模块 localStorageHelp.js
+//在addCar的时候set
+
+```
+//设置数据
+export function setData(json){
+    //先检测本地是否有数据，如果有就累加，没有就push
+    let data = getData();
+    //遍历数组
+    let flag = false;
+    data.forEach(function(item) {    
+        if(item.id == json.id){
+            //count就累加
+            item.count += json.count;
+            flag = true;
+        }  
+    });
+     //但是不可以else
+     if(!flag){
+        data.push(json);
+    }
+    //设置数据
+    localStorage.setItem('goodslist',JSON.stringify(data));
+}
+```
+
+## 购物车页面
+#### 列表展示
+```
+获取id，从localStorage中获取
+
+//获取数据
+export function getData(){
+    //获取到的是字符串，而我们想要对象形式
+    return JSON.parse( 	localStorage.getItem('goodslist') || '[]' );
+}
+
+```
+
+注意：因为info内没有count属性，所以要从本地获取从count。
+要保证索引一致，才能添加属性
+【需要做一步排序】
+```
+//排序this.info 
+this.info.sort(function(item1,item2){
+	return item1.id - item2.id;
+})
+```
+#### switch 的显示
+```
+设置为数组，在数据显示的时候，每次都push一个false
+//插入数据count
+this.info.forEach((item,index)=>{
+     item.count = this.data[index].count
+	 this.values.push(false);
+ })
+```
+#### 点击删除数据
+```
+需要做四件事：
+	删除本地存储
+	删除页面展示的info中的数据
+	删除switch所在的values中的值
+	通知app.vue的badge的值需要修改【自定义事件】
+	app页面再次获取数据
+
+//删除数据
+  export function delData(id){
+    //查找id
+    var data = getData();
+    //循环查找数据
+    let index = data.findIndex((item)=>{
+        return item.id = id;
+    })
+    data.splice(index,1);
+    localStorage.setItem('goodslist',JSON.stringify(data));
+}
+```
+#### 点击加减的时候改变数据
+点击的时候，其实就是更新数据，在原来数据的基础上加或者减1
+【需要传给本地存储id，加减类型】
+
+number.vue做的事：
+	自定义事件（给父组件传值）countChange的时候要传递一个json（包括id，type）
+
+shopcar.vue需要做的事：
+	调用countChange事件，
+	在该事件触发的时候，调用本地的数据更新
+	同时通知app.vue需要更新badge的值【不相关组件传值】
+```
+nember.vue页面：
+ this.type = 'add' ;
+//更新localStorage中的数据 要写在modify之前
+//否则 此时会造成不同步修改badge的数据
+// updateData({id:this.id,type:1});
+this.modify();
+
+
+modify(){
+ 	this.$emit('countChange',	{id:this.id,count:this.count,type:this.type});
+   // console.log(this.count);
+}
+
+
+shopcar页面：
+
+  countChange(obj){
+	// console.log('countChange');
+	// console.log(obj);
+	let num = obj.type === 'add' ? 1 : -1;
+	// console.log(num);
+	//调用本地存储
+       updateData({id:obj.id,type:num});
+	//自定义事件通知 app.vue来改变数据  改变badge的值
+	vueObj.$emit('uData')
+    }
+
+
+app.vue页面：
+//加减号时数据改变
+vueObj.$on('uData',()=>{
+	// console.log('updateData');
+	//localStorage中获取数据
+	//调用本地的更新数据
+	this.getNum()
+})
+
+```
+#### 显示总数，总价
+```
+监视values的改变
+watch:{
+    'values':function(newVlue){
+	let count = 0;
+	let totalPrice = 0;
+	// 获取值是true的按钮对应的数量 count 
+	this.values.forEach((item,index)=>{
+	    if(item){
+		count += this.info[index].count;
+		// console.log(count);
+		this.count = count;
+		//计算总价
+		totalPrice += this.info[index].count * this.info[index].sell_price;
+		// console.log(totalPrice);
+		this.totalPrice = totalPrice;
+	    }
+	})
+    }
+}
+```
