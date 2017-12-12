@@ -109,6 +109,8 @@
                 });
                 //删除数据
                 this.info.splice(index,1);
+                // 删除values中的值
+                this.values.splice(index,1);
                 // 3 badge对应的值也要修改
                 //思路：自定义事件，在app.vue处使用
                 vueObj.$emit('delData')
@@ -118,10 +120,10 @@
             countChange(obj){
                 // console.log('countChange');
                 // console.log(obj);
-                // let num = obj.type === 'add' ? 1 : -1;
+                let num = obj.type === 'add' ? 1 : -1;
                 // console.log(num);
                 //调用本地存储
-                // updateData({id:obj.id,type:num});
+                updateData({id:obj.id,type:num});
                 //自定义事件通知 app.vue来改变数据  改变badge的值
                 vueObj.$emit('uData')
             }
