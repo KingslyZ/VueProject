@@ -157,7 +157,7 @@
     }
     /* 详情部分 */
     .detail{
-        height:176px;
+        height:200px;
         border:1px solid #ccc;
         border-radius:3px;
         margin-top:5px;
@@ -165,7 +165,7 @@
         font-size: 14px;
     }
     .detail h4{
-        line-height: 34px;
+        line-height: 24px;
         border-bottom: 1px solid #ccc;
         color:#0094ff;
         font-size: 16px;

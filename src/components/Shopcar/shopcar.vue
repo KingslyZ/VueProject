@@ -2,7 +2,7 @@
     <div class="mui-content">
         <ul>
             <li v-for='(item,index) in info' :key = 'index'>
-                <mt-switch v-model="values[0]" class="mui-pull-left"></mt-switch>
+                <mt-switch v-model="values[index]" class="mui-pull-left"></mt-switch>
                 <img class="mui-pull-left" :src="item.thumb_path" alt="">
                 <div class="content">
                     <div class="title">{{ item.title }}</div>
@@ -21,7 +21,9 @@
             </div>
             <button class="mui-btn mui-btn-danger mui-pull-right">去结算</button>
         </div>
+        {{ values }}
     </div>
+    
 </template>
 <script>
     import number from '../Public/number.vue';
@@ -31,7 +33,7 @@
         data(){
             return {
                 info:[],
-                values:[true,false],
+                values:[],
                 ids:[],
                 data:[]
             }
@@ -42,7 +44,6 @@
         created(){
             this.getNum(),
             this.getInfo()
-           
         },
         methods:{
             //获取本地数据
@@ -79,6 +80,7 @@
                         //插入数据count
                         this.info.forEach((item,index)=>{
                             item.count = this.data[index].count
+                            this.values.push(false);
                         })
                         console.log(this.info);
                     })
