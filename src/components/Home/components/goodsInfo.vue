@@ -14,7 +14,14 @@
                 <div class="count">
                     <!-- countChange事件的调用 -->
                     购买数量：<number :quality='info.stock_quantity' @countChange='getCount'></number>
-                    
+                    <transition
+                        v-on:before-enter="beforeEnter"
+                        v-on:enter="enter"
+                        v-on:after-enter="afterEnter"
+                        v-on:after-leave="afterLeave"
+                    >
+                    <span v-show='isShow' class="ball">{{ count }}</span>
+                    </transition>
                 </div>
                 <div class="buy">
                     <button class="mui-btn mui-btn-primary">立即购买</button>
@@ -44,6 +51,8 @@
 </template>
 <script>
     import Vue from 'vue';
+    //导入Vue实例
+    import vueObj from '../../Config/communication.js';
     //导入轮播组件
     import myswipe from '../../Public/swipe.vue';
     //导入数据
@@ -55,7 +64,8 @@
                 info:{},
                 picInfo:[],
                 img_url:'getthumimages/'+this.id,
-                count:1
+                count:1,
+                isShow:false
             }
         },
         created(){
@@ -86,14 +96,45 @@
             //自定义事件countChange对应的处理函数
             //count是从子组件接收过来数值
             getCount(count){
-                console.log(count);
+                // console.log(count);
                 //子组件给父组件传值
                 this.count = count;
+                //不想关组件传值给app.vue传值
             },
             //加入购物车
             addCar(){
-                console.log(this.count);
-            }    
+                // console.log(this.count);
+               
+                this.isShow = true;  
+            },
+            //动画执行之前
+            beforeEnter(el){
+                el.style.transform = 'translate(0,0)';
+            },
+            //动画进入
+            enter(el,done){
+                //记录距离
+                let ballX = el.getBoundingClientRect().left;
+                let ballY = el.getBoundingClientRect().top;
+                //获取bange距离
+                let badgeX = document.querySelector('.mui-badge').getBoundingClientRect().left;
+                let badgeY = document.querySelector('.mui-badge').getBoundingClientRect().top;
+
+                let X = badgeX - ballX;
+                let Y = badgeY - ballY;
+                //设置距离
+                el.style.transform =`translate(${X}px,${Y}px)`
+                done();
+            },
+            //动画进入完毕
+            afterEnter(el){
+                //小球消失
+                this.isShow = false;
+            },
+            //动画执行完毕，显示badge才显示数据
+            afterLeave: function () {
+                vueObj.$emit('bringCount',this.count);
+            }
         }
     }
 </script>
@@ -126,6 +167,21 @@
     }
     .detail  .content{
         padding: 10px 20px;
+        position: relative;
+    }
+    .detail  .content .ball{
+        display: inline-block;
+        height: 25px;
+        width: 25px;
+        border-radius: 50%;
+        background-color: red;
+        position: absolute;
+        top:46px;
+        right:120px;
+        text-align: center;
+        line-height: 25px;
+        color:#fff;
+        transition: all 0.4s linear;
     }
     .detail .price{
         display: flex;

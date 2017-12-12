@@ -14,7 +14,8 @@
             <span class="mui-tab-label">会员</span>
         </router-link>
         <router-link class="mui-tab-item" to="/shopcar">
-            <span class="mui-icon mui-icon-contact"><span class="mui-badge">9</span></span>
+            <span class="mui-icon mui-icon-contact">
+            <span class="mui-badge">{{count}}</span></span>
             <span class="mui-tab-label">购物车</span>
         </router-link>
         <router-link class="mui-tab-item" to="/search">
@@ -27,14 +28,20 @@
 
 </template>
 <script>
+    import vueObj from '../src/components/Config/communication.js';
     export default {
        data(){
            return {
-               isShow:false
+               isShow:false,
+               count:0
            }
        },
        created(){
-          this.judgePath(this.$route.path)
+          this.judgePath(this.$route.path);
+          vueObj.$on('bringCount',(count)=>{
+                // console.log(count);
+                this.count += count;
+            })
        },
        methods:{
            goBack(){
@@ -48,6 +55,7 @@
                    this.isShow = false;
                }
            }
+          
        },
        watch:{
            '$route':function(newValue){

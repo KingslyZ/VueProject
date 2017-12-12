@@ -8,9 +8,7 @@
                     <div class="title">{{ item.title }}</div>
                     <span class="sellPrice mui-pull-left">￥{{ item.sell_price }}</span>
                     <div class="count mui-pull-left">
-                        <div class="left mui-pull-left">+</div>
-                        <div class="middle mui-pull-left">{{ item.cou }}</div>
-                        <div class="right mui-pull-left">-</div>
+                        <number></number>
                     </div>
                     <div class="del mui-pull-left">删除</div>
                 </div>
@@ -26,12 +24,16 @@
     </div>
 </template>
 <script>
+    import number from '../Public/number.vue';
     export default{
         data(){
             return {
                 info:[],
                 value:''
             }
+        },
+        components:{
+            number
         },
         created(){
             this.getInfo()
@@ -46,6 +48,7 @@
                         console.log(res.data);
                         if(res.status === 200 && res.data.status ===0){
                             this.info = res.data.message;
+                            
                         }else{
                             this.$toast('服务器请求失败');
                         }
@@ -115,6 +118,7 @@
     .del{
         color:#ccc;
         font-size: 14px;
+        margin-top:12px;
     }
     .num{
         color:#000;
