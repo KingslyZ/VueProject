@@ -30,7 +30,7 @@
 <script>
     import vueObj from '../src/components/Config/communication.js';
     //导入本地存储
-    import { getData } from './components/Public/localStorageHelp.js';
+    import { getData,updateData } from './components/Public/localStorageHelp.js';
     export default {
        data(){
            return {
@@ -44,8 +44,21 @@
                 // console.log(count);
                 this.count += count;
             });
+            
             //获取本地存储的数据
             this.getNum();
+            //注册自定义事件【事件来自shopcar，删除数据的时候】，改变数据
+            vueObj.$on('delData',()=>{
+                //调用本地的更新数据
+               this.getNum()
+            });
+            //加减号时数据改变
+            vueObj.$on('uData',()=>{
+                // console.log('updateData');
+                //localStorage中获取数据
+                //调用本地的更新数据
+                this.getNum()
+            })
        },
        methods:{
            goBack(){

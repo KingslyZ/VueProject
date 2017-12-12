@@ -8,16 +8,16 @@
                     <div class="title">{{ item.title }}</div>
                     <span class="sellPrice mui-pull-left">￥{{ item.sell_price }}</span>
                     <div class="count mui-pull-left">
-                        <number :num='item.count'></number>
+                        <number :num='item.count' :id='item.id' @countChange='countChange'></number>
                     </div>
-                    <div class="del mui-pull-left">删除</div>
+                    <div class="del mui-pull-left" @click = 'delData(item.id)'>删除</div>
                 </div>
             </li>
         </ul>
         <div class="num">
             <div class="left  mui-pull-left">
                 <p class="total">总计（不含运费）</p>
-                <p >已经选择商品0件，共计￥0元</p>
+                <p >已经选择商品{{ count }}件，共计￥{{ totalPrice }}元</p>
             </div>
             <button class="mui-btn mui-btn-danger mui-pull-right">去结算</button>
         </div>
@@ -28,14 +28,19 @@
 <script>
     import number from '../Public/number.vue';
     //导入本地存储
-    import { getData } from '../Public/localStorageHelp.js';
+    import { getData,delData,updateData } from '../Public/localStorageHelp.js';
+    // 导入通信模块
+    import vueObj from '../../components/Config/communication.js';
+
     export default{
         data(){
             return {
                 info:[],
                 values:[],
                 ids:[],
-                data:[]
+                data:[],
+                count:0,
+                totalPrice:0
             }
         },
         components:{
@@ -49,6 +54,11 @@
             //获取本地数据
             getNum(){
                 let data = getData();
+                //如果没有数据，就不在发送请求
+                if(data.length <= 0){
+                    this.$toast('暂无数据');
+                    return; 
+                }
                 data.forEach((item)=> {
                     this.ids.push(item.id);
                     // console.log(this.ids);
@@ -87,8 +97,54 @@
                     .catch((err)=>{
                         console.error(err)
                     })
+            },
+            //删除数据
+            delData(id){
+                // 1 删除localStorage中的数据
+                delData(id);
+                // 2 页面删除数据
+                //this.info进行数据的删除
+                let index  = this.info.findIndex((item)=>{
+                    return item.id = id
+                });
+                //删除数据
+                this.info.splice(index,1);
+                // 3 badge对应的值也要修改
+                //思路：自定义事件，在app.vue处使用
+                vueObj.$emit('delData')
+            },
+            //点击加减号的时候更新数据
+            // 数据改变时 注册countChange事件
+            countChange(obj){
+                // console.log('countChange');
+                // console.log(obj);
+                // let num = obj.type === 'add' ? 1 : -1;
+                // console.log(num);
+                //调用本地存储
+                // updateData({id:obj.id,type:num});
+                //自定义事件通知 app.vue来改变数据  改变badge的值
+                vueObj.$emit('uData')
             }
-            
+
+
+        },
+        watch:{
+            'values':function(newVlue){
+                let count = 0;
+                let totalPrice = 0;
+                // 获取值是true的按钮对应的数量 count 
+                this.values.forEach((item,index)=>{
+                    if(item){
+                        count += this.info[index].count;
+                        // console.log(count);
+                        this.count = count;
+                        //计算总价
+                        totalPrice += this.info[index].count * this.info[index].sell_price;
+                        // console.log(totalPrice);
+                        this.totalPrice = totalPrice;
+                    }
+                })
+            }
         }
     }
 </script>

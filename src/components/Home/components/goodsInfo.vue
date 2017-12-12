@@ -98,10 +98,10 @@
            },
             //自定义事件countChange对应的处理函数
             //count是从子组件接收过来数值
-            getCount(count){
+            getCount(obj){
                 // console.log(count);
                 //子组件给父组件传值
-                this.count = count;
+                this.count = obj.count;
                 //不想关组件传值给app.vue传值
             },
             //加入购物车
@@ -123,6 +123,7 @@
                 //获取bange距离
                 let badgeX = document.querySelector('.mui-badge').getBoundingClientRect().left;
                 let badgeY = document.querySelector('.mui-badge').getBoundingClientRect().top;
+                
 
                 let X = badgeX - ballX;
                 let Y = badgeY - ballY;
@@ -138,7 +139,6 @@
             //动画执行完毕，显示badge才显示数据
             afterLeave: function () {
                 vueObj.$emit('bringCount',this.count);
-               
             }
         }
     }
@@ -175,6 +175,8 @@
         position: relative;
     }
     .detail  .content .ball{
+        /* 提高小球层级 */
+        z-index:100;
         display: inline-block;
         height: 25px;
         width: 25px;
