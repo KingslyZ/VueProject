@@ -1,6 +1,12 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const webpack = require('webpack');
+// 把css打包到一个文件中
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+// 压缩css
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+
 module.exports = {
 
   entry: './src/app.js',
@@ -12,11 +18,10 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          'autoprefixer-loader'
-        ]
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: ['css-loader', 'autoprefixer-loader']
+        })
       },
       {
         test: /\.less$/,
@@ -42,7 +47,8 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: 10240
+              limit: 10240,
+              name: '/statics/fonts/[name].[ext]'
             }
           }
         ]
@@ -66,7 +72,26 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'Output Management',
       template:'index.html',
-      filename:'index.html'
-    })
+      filename:'index.html',
+      minify: {
+        collapseWhitespace: true, //去除换行和空格
+        minifyCSS: true, //压缩html内的css
+        minifyJS: true, //压缩html内的js
+        removeComments: true //删除html注释
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    }),
+    new ExtractTextPlugin({
+      filename: '/statics/css/style.css'
+    }),
+    new OptimizeCssAssetsPlugin({
+      cssProcessor: require('cssnano'),
+      cssProcessorOptions: { discardComments: {removeAll: true } },
+      canPrint: true
+    }),
   ]
 }
